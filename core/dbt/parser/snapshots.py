@@ -26,7 +26,9 @@ class SnapshotParser(
         )
 
     def parse_from_dict(self, dct, validate=True) -> IntermediateSnapshotNode:
-        return IntermediateSnapshotNode.from_dict(dct, validate=validate)
+        if validate:
+            IntermediateSnapshotNode.validate(dct)
+        return IntermediateSnapshotNode.from_dict(dct)
 
     @property
     def resource_type(self) -> NodeType:

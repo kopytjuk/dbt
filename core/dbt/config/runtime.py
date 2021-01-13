@@ -174,7 +174,7 @@ class RuntimeConfig(Project, Profile, AdapterRequiredConfig):
         :raises DbtProjectError: If the configuration fails validation.
         """
         try:
-            Configuration.from_dict(self.serialize(), validate=True)
+            Configuration.validate(self.serialize())
         except ValidationError as e:
             raise DbtProjectError(validator_error_message(e)) from e
 

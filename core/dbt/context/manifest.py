@@ -55,6 +55,7 @@ class ManifestContext(ConfiguredContext):
             None,
         )
 
+    # This will only work at top-level.
     def to_dict(self):
         dct = super().to_dict()
         # This moves all of the macros in the 'namespace' into top level

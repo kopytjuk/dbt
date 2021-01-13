@@ -21,7 +21,7 @@ from dbt.dataclass_schema import ValidationError
 
 class TestLocalPackage(unittest.TestCase):
     def test_init(self):
-        a_contract = LocalPackage.from_dict({'local': '/path/to/package'}, validate=True)
+        a_contract = LocalPackage.from_dict({'local': '/path/to/package'})
         self.assertEqual(a_contract.local, '/path/to/package')
         a = LocalUnpinnedPackage.from_contract(a_contract)
         self.assertEqual(a.local, '/path/to/package')
@@ -34,7 +34,6 @@ class TestGitPackage(unittest.TestCase):
     def test_init(self):
         a_contract = GitPackage.from_dict(
             {'git': 'http://example.com', 'revision': '0.0.1'},
-            validate=True
         )
         self.assertEqual(a_contract.git, 'http://example.com')
         self.assertEqual(a_contract.revision, '0.0.1')
@@ -53,20 +52,17 @@ class TestGitPackage(unittest.TestCase):
 
     def test_invalid(self):
         with self.assertRaises(ValidationError):
-            GitPackage.from_dict(
+            GitPackage.validate(
                 {'git': 'http://example.com', 'version': '0.0.1'},
-                validate=True
             )
 
     def test_resolve_ok(self):
         a_contract = GitPackage.from_dict(
             {'git': 'http://example.com', 'revision': '0.0.1'},
-            validate=True
         )
         b_contract = GitPackage.from_dict(
             {'git': 'http://example.com', 'revision': '0.0.1',
              'warn-unpinned': False},
-            validate=True
         )
         a = GitUnpinnedPackage.from_contract(a_contract)
         b = GitUnpinnedPackage.from_contract(b_contract)
@@ -83,11 +79,9 @@ class TestGitPackage(unittest.TestCase):
     def test_resolve_fail(self):
         a_contract = GitPackage.from_dict(
             {'git': 'http://example.com', 'revision': '0.0.1'},
-            validate=True
         )
         b_contract = GitPackage.from_dict(
             {'git': 'http://example.com', 'revision': '0.0.2'},
-            validate=True
         )
         a = GitUnpinnedPackage.from_contract(a_contract)
         b = GitUnpinnedPackage.from_contract(b_contract)
@@ -99,7 +93,7 @@ class TestGitPackage(unittest.TestCase):
             c.resolved()
 
     def test_default_revision(self):
-        a_contract = GitPackage.from_dict({'git': 'http://example.com'}, validate=True)
+        a_contract = GitPackage.from_dict({'git': 'http://example.com'})
         self.assertEqual(a_contract.revision, None)
         self.assertIs(a_contract.warn_unpinned, None)
 
@@ -176,9 +170,8 @@ class TestHubPackage(unittest.TestCase):
 
     def test_invalid(self):
         with self.assertRaises(ValidationError):
-            RegistryPackage.from_dict(
+            RegistryPackage.validate(
                 {'package': 'namespace/name', 'key': 'invalid'},
-                validate=True
             )
 
     def test_resolve_ok(self):
@@ -398,7 +391,7 @@ class TestPackageSpec(unittest.TestCase):
                 {'package': 'fishtown-analytics-test/a', 'version': '>0.1.2'},
                 {'package': 'fishtown-analytics-test/b', 'version': '0.2.1'},
             ],
-        }, validate=True)
+        })
         resolved = resolve_packages(package_config.packages, mock.MagicMock(project_name='test'))
         self.assertEqual(len(resolved), 2)
         self.assertEqual(resolved[0].name, 'fishtown-analytics-test/a')

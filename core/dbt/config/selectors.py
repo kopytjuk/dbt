@@ -30,9 +30,11 @@ Validator Error:
 
 
 class SelectorConfig(Dict[str, SelectionSpec]):
+
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> 'SelectorConfig':
+    def selectors_from_dict(cls, data: Dict[str, Any]) -> 'SelectorConfig':
         try:
+            SelectorFile.validate(data)
             selector_file = SelectorFile.from_dict(data)
             selectors = parse_from_selectors_definition(selector_file)
         except ValidationError as exc:
@@ -66,7 +68,7 @@ class SelectorConfig(Dict[str, SelectionSpec]):
                 f'Could not render selector data: {exc}',
                 result_type='invalid_selector',
             ) from exc
-        return cls.from_dict(rendered)
+        return cls.selectors_from_dict(rendered)
 
     @classmethod
     def from_path(
@@ -107,7 +109,7 @@ def selector_config_from_data(
         selectors_data = {'selectors': []}
 
     try:
-        selectors = SelectorConfig.from_dict(selectors_data)
+        selectors = SelectorConfig.selectors_from_dict(selectors_data)
     except ValidationError as e:
         raise DbtSelectorsError(
             MALFORMED_SELECTOR_ERROR.format(error=str(e.message)),

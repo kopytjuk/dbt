@@ -564,10 +564,12 @@ class Manifest(MacroMethods):
         """
         self.flat_graph = {
             'nodes': {
-                k: v.to_dict(omit_none=False) for k, v in self.nodes.items()
+                k: v.to_dict(options={'keep_none': True})
+                for k, v in self.nodes.items()
             },
             'sources': {
-                k: v.to_dict(omit_none=False) for k, v in self.sources.items()
+                k: v.to_dict(options={'keep_none': True})
+                for k, v in self.sources.items()
             }
         }
 
@@ -751,10 +753,10 @@ class Manifest(MacroMethods):
             parent_map=backward_edges,
         )
 
-    def to_dict(self, omit_none=True, validate=False):
-        return self.writable_manifest().to_dict(
-            omit_none=omit_none, validate=validate
-        )
+    # TODO: this was to_dict(). Ensure that the right method is called
+    # Should this be changed to __pre_serialize__ method
+    def writable_to_dict(self):
+        return self.writable_manifest().to_dict()
 
     def write(self, path):
         self.writable_manifest().write(path)

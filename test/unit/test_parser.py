@@ -22,7 +22,7 @@ from dbt.node_types import NodeType
 from dbt.contracts.files import SourceFile, FileHash, FilePath
 from dbt.contracts.graph.manifest import Manifest, MacroManifest
 from dbt.contracts.graph.model_config import (
-    NodeConfig, TestConfig, TimestampSnapshotConfig, SnapshotStrategy,
+    NodeConfig, TestConfig, SnapshotConfig
 )
 from dbt.contracts.graph.parsed import (
     ParsedModelNode, ParsedMacro, ParsedNodePatch, DependsOn, ColumnInfo,
@@ -529,6 +529,7 @@ class SnapshotParserTest(BaseParserTest):
         {{% snapshot foo %}}{}{{% endsnapshot %}}
         '''.format(raw_sql)
         block = self.file_block_for(full_file, 'nested/snap_1.sql')
+        print(f"--- --- block: {block}")
         self.parser.parse_file(block)
         self.assert_has_results_length(self.parser.results, nodes=1)
         node = list(self.parser.results.nodes.values())[0]
@@ -544,8 +545,8 @@ class SnapshotParserTest(BaseParserTest):
             package_name='snowplow',
             original_file_path=normalize('snapshots/nested/snap_1.sql'),
             root_path=get_abs_os_path('./dbt_modules/snowplow'),
-            config=TimestampSnapshotConfig(
-                strategy=SnapshotStrategy.Timestamp,
+            config=SnapshotConfig(
+                strategy='timestamp',
                 updated_at='last_update',
                 target_database='dbt',
                 target_schema='analytics',
@@ -604,8 +605,8 @@ class SnapshotParserTest(BaseParserTest):
             package_name='snowplow',
             original_file_path=normalize('snapshots/nested/snap_1.sql'),
             root_path=get_abs_os_path('./dbt_modules/snowplow'),
-            config=TimestampSnapshotConfig(
-                strategy=SnapshotStrategy.Timestamp,
+            config=SnapshotConfig(
+                strategy='timestamp',
                 updated_at='last_update',
                 target_database='dbt',
                 target_schema='analytics',
@@ -634,8 +635,8 @@ class SnapshotParserTest(BaseParserTest):
             package_name='snowplow',
             original_file_path=normalize('snapshots/nested/snap_1.sql'),
             root_path=get_abs_os_path('./dbt_modules/snowplow'),
-            config=TimestampSnapshotConfig(
-                strategy=SnapshotStrategy.Timestamp,
+            config=SnapshotConfig(
+                strategy='timestamp',
                 updated_at='last_update',
                 target_database='dbt',
                 target_schema='analytics',
